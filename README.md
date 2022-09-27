@@ -1,2 +1,4 @@
-# SOCC
-Secure One-way Communication Channel
+# SOCC (Secure One-way Communication Channel)
+
+## Antagelser
+
