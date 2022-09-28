@@ -49,7 +49,6 @@ def decrypt(cipher, key):
 def main():
     connection = accept_connection()
     # TODO kobling mellom dest og ip/port
-    
     s = socket.socket()
     s.connect((HOST, B_PORT))
 

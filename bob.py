@@ -4,9 +4,14 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
  
-def deserialize(bytes : bytes):
-    msglen = int.from_bytes(bytes[0:2], 'big')+2
-    return (bytes[2:msglen], bytes[msglen:])
+def deserialize(bytes : bytes, counter : int):
+    msgindex = int.from_bytes(bytes[0:2], 'big')+4
+    recv_counter = int.from_bytes(bytes[2:4], 'big')
+    print("QJSAJK", msgindex, recv_counter)
+    if(recv_counter != counter):
+        print("Message not in order! Quitting..")
+        exit(0)
+    return (bytes[4:msgindex], bytes[msgindex:])
 
  
 # specify Host and Port
@@ -31,32 +36,25 @@ def accept_connection():
         + str(address[1]))
     return connection 
 
-def receive_message(connection : socket, private_key):
+def receive_message(connection : socket, private_key, counter : int):
     var = connection.recv(1024)
     
-    return deserialize(decrypt(var, private_key))
+    return deserialize(decrypt(var, private_key), counter)
 
 def verify_signature(message, signature):
     with open("keys/a_pub.pub", "rb") as key_file:
 
         public_key = serialization.load_pem_public_key(
-
             key_file.read()
-
         )
+
     public_key.verify(
-
         signature,
-
         message,
-
         padding.PSS(
-
             mgf=padding.MGF1(hashes.SHA256()),
-
             salt_length=padding.PSS.MAX_LENGTH
         ),
-
         hashes.SHA256()
     )
 
@@ -67,9 +65,7 @@ def decrypt(cipher, key):
         cipher,
         padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
-
             algorithm=hashes.SHA256(),
-
             label=None
         )
 )
@@ -87,9 +83,11 @@ def read_priv_key():
 
 def main():
     connection = accept_connection()
+    counter = 0
     while(True):
         private_key = read_priv_key()
-        (message, signature) = receive_message(connection, private_key)
+        (message, signature) = receive_message(connection, private_key, counter)
+        counter = (counter + 1)%65536
         print(str(message))
         verify_signature(message, signature)
 

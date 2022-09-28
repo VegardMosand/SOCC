@@ -29,7 +29,6 @@ def read_pub_key(path):
         )
 
 def event_loop(private_key, b_pub):
-    print(message)
     s = socket.socket()
     s.connect((HOST, PORT))
 
@@ -46,9 +45,11 @@ def event_loop(private_key, b_pub):
             hashes.SHA256()
         )
         payload = encrypt(serialize(message, signature, counter), b_pub)
-        packet = serialize(b'b', payload) 
+        b = b'b'
+        print(b, payload)
+        packet = len(b'b').to_bytes(2, 'big')+b'b'+payload 
         s.send(packet)
-        #counter = (counter + 1)%
+        counter = (counter + 1)%65536
         time.sleep(2)
     s.close()
 
@@ -67,8 +68,8 @@ def encrypt(bytes : bytes, public_key):
 
     )
 
-def serialize(message : bytes, signature : bytes) -> bytes:
-    return len(message).to_bytes(2, 'big')+message+signature
+def serialize(message : bytes, signature : bytes, counter : int) -> bytes:
+    return len(message).to_bytes(2, 'big')+counter.to_bytes(2, 'big')+message+signature
 
 def main():
     private_key = read_priv_key()
