@@ -2,7 +2,7 @@
 En sikker enveis kommunikasjonskanal
 ## Antagelser
 - Jeg har antatt at en uvitende tredjepart betyr at tredjeparten ikke skal kunne lese meldingene som sendes mellom A og B
-- Jeg har antatt at å avdekke et system refererer tila t man ikke kan få tak i det systemet sin ip adresse
+- Jeg har antatt at å avdekke et system refererer til at man ikke kan få tak i det systemet sin ip adresse
 - At meldinger skal sendes uten menneskelig interaksjon har jeg tolket som at det skal være en form for automatisk sending av meldinger etter at systemene har startet
 
 ## Forutsetninger
